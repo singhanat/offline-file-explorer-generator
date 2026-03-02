@@ -81,6 +81,32 @@ foreach ($item in $items) {
     }
 }
 
+Write-Host "Building summary metadata..." -ForegroundColor Cyan
+
+# Compute global totals for metadata
+$totalFiles = ($items | Where-Object { -not $_.IsFolder }).Count
+$totalFolders = ($items | Where-Object { $_.IsFolder }).Count
+$totalSize = ($items | Where-Object { -not $_.IsFolder } | Measure-Object -Property Size -Sum).Sum
+if ($null -eq $totalSize) { $totalSize = 0 }
+
+# Top 10 file extensions by count
+$extGroups = $items | Where-Object { -not $_.IsFolder } |
+Group-Object { if ($_.Name.Contains('.')) { $_.Name.Split('.')[-1].ToLower() } else { '(no ext)' } } |
+Sort-Object Count -Descending |
+Select-Object -First 10 |
+ForEach-Object { [PSCustomObject]@{ Ext = $_.Name; Count = $_.Count } }
+$extJson = $extGroups | ConvertTo-Json -Compress
+
+$metaObj = [PSCustomObject]@{
+    ScannedPath   = $parentPath
+    ScannedAt     = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+    TotalFiles    = $totalFiles
+    TotalFolders  = $totalFolders
+    TotalSize     = $totalSize
+    TopExtensions = $extGroups
+}
+$metaJson = $metaObj | ConvertTo-Json -Compress -Depth 5
+
 Write-Host "Processing data for HTML..." -ForegroundColor Cyan
 
 # Prepare JSON
@@ -97,8 +123,9 @@ $templatePath = "$PSScriptRoot\explorer_template.html"
 if (Test-Path $templatePath) {
     $htmlContent = [IO.File]::ReadAllText($templatePath, [System.Text.Encoding]::UTF8)
     
-    # Inject JSON directly into the Javascript variable
+    # Inject fileData and metaData into the Javascript placeholders
     $htmlContent = $htmlContent -replace 'const fileData = \[\];', "const fileData = $jsonCompressed;"
+    $htmlContent = $htmlContent -replace 'const metaData = \{\};', "const metaData = $metaJson;"
     
     $outHtml = "$PSScriptRoot\OfflineExplorer.html"
     [IO.File]::WriteAllText($outHtml, $htmlContent, [System.Text.Encoding]::UTF8)

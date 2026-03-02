@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +11,7 @@
             --text-main: #cccccc;
             --text-muted: #888888;
             --border-color: #333333;
+            --accent: #0078d4;
         }
 
         body {
@@ -26,11 +26,12 @@
             user-select: none;
         }
 
+        /* ── TOOLBAR ── */
         .toolbar {
-            padding: 10px 15px;
+            padding: 8px 15px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
             border-bottom: 1px solid var(--border-color);
             background-color: #202020;
         }
@@ -43,30 +44,21 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 13px;
+            white-space: nowrap;
         }
-
-        .btn:hover {
-            background-color: #3b3b3b;
-        }
-
-        .btn:disabled {
-            color: #555;
-            cursor: not-allowed;
-            border-color: #222;
-            background: transparent;
-        }
+        .btn:hover { background-color: #3b3b3b; }
+        .btn:disabled { color: #555; cursor: not-allowed; border-color: #222; background: transparent; }
 
         select.btn {
             padding: 4px 10px;
             appearance: none;
             outline: none;
-            width: auto;
         }
 
         .address-bar {
             flex: 1;
             display: flex;
-            background-color: #111111;
+            background-color: #111;
             border: 1px solid #444;
             padding: 4px 10px;
             border-radius: 3px;
@@ -75,73 +67,125 @@
             font-size: 14px;
             min-height: 22px;
         }
+        .address-part { cursor: pointer; padding: 2px 4px; border-radius: 2px; }
+        .address-part:hover { background-color: #333; }
 
-        .address-part {
-            cursor: pointer;
-            padding: 2px 4px;
-            border-radius: 2px;
+        /* ── SEARCH BOX ── */
+        .search-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
         }
-
-        .address-part:hover {
-            background-color: #333;
+        .search-wrap .icon-search {
+            position: absolute;
+            left: 9px;
+            color: #888;
+            font-size: 13px;
+            pointer-events: none;
         }
+        #search-input {
+            background: #111;
+            border: 1px solid #444;
+            color: var(--text-main);
+            padding: 5px 10px 5px 28px;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 200px;
+            outline: none;
+            transition: border-color 0.2s, width 0.2s;
+        }
+        #search-input:focus {
+            border-color: var(--accent);
+            width: 280px;
+        }
+        #search-input::placeholder { color: #666; }
 
-        .list-header,
-        .row {
+        /* ── SUMMARY BAR ── */
+        #summary-bar {
+            background: #1e1e2e;
+            border-bottom: 1px solid var(--border-color);
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 0;
+            font-size: 12px;
+            flex-wrap: wrap;
+        }
+        .summary-stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 2px 16px 2px 0;
+            margin-right: 16px;
+            border-right: 1px solid #333;
+        }
+        .summary-stat:last-of-type { border-right: none; }
+        .summary-label { color: var(--text-muted); }
+        .summary-value { color: #e0e0ff; font-weight: 600; }
+        .summary-meta {
+            margin-left: auto;
+            color: #555;
+            font-size: 11px;
+            text-align: right;
+        }
+        .summary-meta strong { color: #777; }
+
+        /* ── EXTENSION PILLS ── */
+        .ext-section {
+            width: 100%;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .ext-label { color: var(--text-muted); font-size: 11px; white-space: nowrap; }
+        .ext-pill {
+            background: #2a2a3a;
+            border: 1px solid #3a3a5a;
+            border-radius: 20px;
+            padding: 1px 9px;
+            font-size: 11px;
+            color: #aab;
+        }
+        .ext-pill span { color: #778; font-size: 10px; margin-left: 3px; }
+
+        /* ── LIST HEADER ── */
+        .list-header, .row {
             display: grid;
             grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
             padding: 6px 15px;
             font-size: 13px;
             align-items: center;
         }
-
         .list-header {
             border-bottom: 1px solid var(--border-color);
             color: var(--text-muted);
-            padding-top: 10px;
-            padding-bottom: 10px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+        .flex-list { flex: 1; overflow-y: auto; }
+        .row { border-bottom: 1px solid transparent; cursor: pointer; }
+        .row:hover { background-color: var(--bg-hover); }
+        .row.selected {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+        .col-name { display: flex; align-items: center; gap: 8px; }
+        .col-size { text-align: right; }
+        .icon { font-size: 16px; min-width: 16px; text-align: center; }
+
+        /* ── SEARCH RESULTS specific ── */
+        .search-path-hint {
+            color: #556;
+            font-size: 11px;
+            margin-top: 1px;
         }
 
-        .flex-list {
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .row {
-            border-bottom: 1px solid transparent;
-            cursor: pointer;
-        }
-
-        .row:hover {
-            background-color: var(--bg-hover);
-        }
-
-        .col-name {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .col-size {
-            text-align: right;
-        }
-
-        .icon {
-            font-size: 16px;
-            min-width: 16px;
-            text-align: center;
-        }
-
-        /* Tree View Styles */
-        .tree-container {
-            padding: 10px 0;
-        }
-
-        .tree-row {
-            display: flex;
-            flex-direction: column;
-        }
-
+        /* ── TREE VIEW ── */
+        .tree-container { padding: 10px 0; }
+        .tree-row { display: flex; flex-direction: column; }
         .tree-item {
             display: flex;
             align-items: center;
@@ -149,11 +193,7 @@
             font-size: 13px;
             cursor: pointer;
         }
-
-        .tree-item:hover {
-            background-color: var(--bg-hover);
-        }
-
+        .tree-item:hover { background-color: var(--bg-hover); }
         .tree-toggle {
             display: inline-block;
             width: 20px;
@@ -163,77 +203,19 @@
             user-select: none;
             transition: transform 0.2s;
         }
-
-        .tree-toggle.open {
-            transform: rotate(90deg);
-        }
-
-        .tree-name {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
-
+        .tree-toggle.open { transform: rotate(90deg); }
+        .tree-name { flex: 1; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
         .tree-details {
             color: var(--text-muted);
             font-size: 12px;
-            text-align: right;
             min-width: 280px;
             display: flex;
             justify-content: flex-end;
             gap: 20px;
         }
+        .tree-children { display: none; }
 
-        .tree-children {
-            display: none;
-        }
-
-        .drop-zone {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            z-index: 999;
-            display: none;
-        }
-
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-dark);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #444;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-
-        .row {
-            border: 1px solid transparent; /* Prepare for selected state outline */
-        }
-        .row.selected {
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 3px;
-        }
-
-        /* Context Menu */
+        /* ── CONTEXT MENU ── */
         .context-menu {
             position: fixed;
             background: #2b2b2b;
@@ -254,11 +236,9 @@
             align-items: center;
             gap: 10px;
         }
-        .context-menu-item:hover {
-            background: #444;
-        }
+        .context-menu-item:hover { background: #444; }
 
-        /* Properties Dialog */
+        /* ── PROPERTIES DIALOG ── */
         .dialog-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -285,35 +265,23 @@
             justify-content: space-between;
             align-items: center;
             padding: 8px 12px;
-            background: #ffffff;
+            background: #fff;
             border-top-left-radius: 6px;
             border-top-right-radius: 6px;
         }
-        .dialog-title {
-            font-size: 13px;
-            color: #000;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
+        .dialog-title { font-size: 13px; color: #000; }
         .dialog-close {
             cursor: pointer;
             font-size: 14px;
             color: #333;
-            width: 24px;
-            height: 24px;
+            width: 24px; height: 24px;
             display: flex;
             justify-content: center;
             align-items: center;
             border-radius: 4px;
         }
         .dialog-close:hover { background: #e81123; color: white; }
-        .dialog-content {
-            background: #ffffff;
-            flex: 1;
-            padding: 0;
-            margin: 0;
-        }
+        .dialog-content { background: #fff; flex: 1; }
         .dialog-tabs {
             display: flex;
             border-bottom: 1px solid #d9d9d9;
@@ -335,32 +303,14 @@
             border-top-color: #0078d7;
             border-radius: 2px 2px 0 0;
         }
-        .dialog-body {
-            padding: 15px;
-            font-size: 12px;
-        }
-        .info-row {
-            display: flex;
-            margin-bottom: 10px;
-        }
-        .info-label {
-            width: 90px;
-            color: #333;
-        }
-        .info-value {
-            flex: 1;
-            color: #000;
-            word-break: break-all;
-        }
-        .hr {
-            height: 1px;
-            background: #d9d9d9;
-            margin: 15px 0;
-        }
+        .dialog-body { padding: 15px; font-size: 12px; }
+        .info-row { display: flex; margin-bottom: 10px; }
+        .info-label { width: 90px; color: #333; }
+        .info-value { flex: 1; color: #000; word-break: break-all; }
+        .hr { height: 1px; background: #d9d9d9; margin: 15px 0; }
         .dialog-footer {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
             padding: 12px;
             background: #f0f0f0;
             border-bottom-left-radius: 6px;
@@ -375,22 +325,71 @@
             cursor: default;
             font-size: 12px;
             color: #000;
+            min-width: 70px;
         }
         .dialog-btn:hover { background: #e5f1fb; border-color: #0078d7; }
+
+        /* ── DROP ZONE ── */
+        .drop-zone {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            z-index: 999;
+        }
+
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
     </style>
 </head>
-
 <body>
+
+    <!-- TOOLBAR -->
     <div class="toolbar">
-        <button class="btn" id="btn-up" title="Up to higher level">↑ Up</button>
-        <button class="btn" id="btn-home" onclick="goHome()" title="Root">🏠 Home</button>
+        <button class="btn" id="btn-up">↑ Up</button>
+        <button class="btn" id="btn-home" onclick="goHome()">🏠 Home</button>
         <div class="address-bar" id="address-bar"></div>
+        <!-- SEARCH -->
+        <div class="search-wrap">
+            <span class="icon-search">🔍</span>
+            <input type="text" id="search-input" placeholder="Search... (Enter to search)" onkeydown="if(event.key==='Enter') triggerSearch()">
+            <button class="btn" id="btn-search" onclick="triggerSearch()" style="margin-left:4px; padding:5px 10px;">Search</button>
+        </div>
         <select class="btn" id="view-mode" onchange="changeViewMode(this.value)">
-            <option value="explorer">🗂️ Explorer View</option>
-            <option value="tree">🌳 Tree View</option>
+            <option value="explorer">🗂️ Explorer</option>
+            <option value="tree">🌳 Tree</option>
         </select>
     </div>
 
+    <!-- SUMMARY BAR -->
+    <div id="summary-bar">
+        <div class="summary-stat">
+            <span class="summary-label">📁 Total Folders:</span>
+            <span class="summary-value" id="meta-folders">—</span>
+        </div>
+        <div class="summary-stat">
+            <span class="summary-label">📄 Total Files:</span>
+            <span class="summary-value" id="meta-files">—</span>
+        </div>
+        <div class="summary-stat">
+            <span class="summary-label">💾 Total Size:</span>
+            <span class="summary-value" id="meta-size">—</span>
+        </div>
+        <div class="summary-meta" id="meta-info">No data loaded</div>
+
+        <div class="ext-section" id="ext-section" style="display:none;">
+            <span class="ext-label">Top file types:</span>
+            <div id="ext-pills"></div>
+        </div>
+    </div>
+
+    <!-- LIST HEADER -->
     <div class="list-header" id="list-header">
         <div>Name</div>
         <div>Date modified</div>
@@ -401,12 +400,15 @@
 
     <div class="flex-list" id="file-list"></div>
 
-    <div class="drop-zone" id="drop-zone">Drop structure.json here!</div>
+    <!-- DROP ZONE -->
+    <div class="drop-zone" id="drop-zone">📂 Drop structure.json here!</div>
 
+    <!-- CONTEXT MENU -->
     <div id="context-menu" class="context-menu">
         <div class="context-menu-item" onclick="showProperties()">⚙️ Properties</div>
     </div>
 
+    <!-- PROPERTIES DIALOG -->
     <div id="dialog-overlay" class="dialog-overlay">
         <div class="dialog">
             <div class="dialog-header">
@@ -418,66 +420,75 @@
                     <div class="dialog-tab active">General</div>
                 </div>
                 <div class="dialog-body">
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                        <div id="prop-icon" style="font-size: 32px; width: 40px; text-align: center;">📁</div>
-                        <input type="text" id="prop-name" readonly style="flex: 1; padding: 4px; border: 1px solid #ccc;">
+                    <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+                        <div id="prop-icon" style="font-size:32px; width:40px; text-align:center;">📁</div>
+                        <input type="text" id="prop-name" readonly style="flex:1; padding:4px; border:1px solid #ccc;">
                     </div>
                     <div class="hr"></div>
-                    <div class="info-row">
-                        <div class="info-label">Type:</div>
-                        <div class="info-value" id="prop-type">File folder</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Location:</div>
-                        <div class="info-value" id="prop-location">C:\</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Size:</div>
-                        <div class="info-value" id="prop-size">0 bytes</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Size on disk:</div>
-                        <div class="info-value" id="prop-size-disk">0 bytes</div>
-                    </div>
-                    <div class="info-row" id="prop-contains-row">
-                        <div class="info-label">Contains:</div>
-                        <div class="info-value" id="prop-contains">0 Files, 0 Folders</div>
-                    </div>
+                    <div class="info-row"><div class="info-label">Type:</div><div class="info-value" id="prop-type">File folder</div></div>
+                    <div class="info-row"><div class="info-label">Location:</div><div class="info-value" id="prop-location">C:\</div></div>
+                    <div class="info-row"><div class="info-label">Size:</div><div class="info-value" id="prop-size">0 bytes</div></div>
+                    <div class="info-row"><div class="info-label">Size on disk:</div><div class="info-value" id="prop-size-disk">0 bytes</div></div>
+                    <div class="info-row" id="prop-contains-row"><div class="info-label">Contains:</div><div class="info-value" id="prop-contains">0 Files, 0 Folders</div></div>
                     <div class="hr"></div>
-                    <div class="info-row">
-                        <div class="info-label">Created:</div>
-                        <div class="info-value" id="prop-date">Monday...</div>
-                    </div>
+                    <div class="info-row"><div class="info-label">Created:</div><div class="info-value" id="prop-date">—</div></div>
                 </div>
             </div>
             <div class="dialog-footer">
-                <button class="dialog-btn" onclick="closeProperties()" style="min-width: 70px;">OK</button>
+                <button class="dialog-btn" onclick="closeProperties()">OK</button>
             </div>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // DATA PLACEHOLDER
+        // DATA PLACEHOLDERS (replaced by PS script)
         // ==========================================
         const fileData = [];
+        const metaData = {};
         // ==========================================
 
         let currentPath = "";
         let currentViewMode = "explorer";
+        let searchQuery = "";
+
+        // ─── INIT ───────────────────────────────
+        function initSummaryBar() {
+            if (!metaData || !metaData.ScannedAt) return;
+            document.getElementById('meta-folders').textContent = formatNumber(metaData.TotalFolders);
+            document.getElementById('meta-files').textContent   = formatNumber(metaData.TotalFiles);
+            document.getElementById('meta-size').textContent    = formatBytesExact(metaData.TotalSize);
+            document.getElementById('meta-info').innerHTML =
+                `<strong>Scanned:</strong> ${metaData.ScannedAt} &nbsp;|&nbsp; <strong>Path:</strong> ${metaData.ScannedPath}`;
+
+            const extSection = document.getElementById('ext-section');
+            const extPills   = document.getElementById('ext-pills');
+            if (metaData.TopExtensions && metaData.TopExtensions.length > 0) {
+                extSection.style.display = 'flex';
+                extPills.innerHTML = metaData.TopExtensions.map(e =>
+                    `<span class="ext-pill">.${e.Ext}<span>${formatNumber(e.Count)}</span></span>`
+                ).join('');
+            }
+        }
+
+        function renderData() {
+            if (searchQuery) { renderSearch(searchQuery); return; }
+            if (currentViewMode === 'tree') { renderTreeRoot(); } 
+            else { renderList(currentPath); }
+        }
 
         function goHome() {
-            if (currentViewMode === 'explorer') {
-                renderList("");
-            }
+            if (currentViewMode === 'explorer') renderList("");
         }
 
         function changeViewMode(mode) {
             currentViewMode = mode;
+            searchQuery = "";
+            document.getElementById('search-input').value = "";
             const addressBar = document.getElementById('address-bar');
-            const btnUp = document.getElementById('btn-up');
+            const btnUp      = document.getElementById('btn-up');
             const listHeader = document.getElementById('list-header');
-            const btnHome = document.getElementById('btn-home');
+            const btnHome    = document.getElementById('btn-home');
 
             if (mode === 'tree') {
                 addressBar.style.visibility = 'hidden';
@@ -494,268 +505,251 @@
             }
         }
 
-        function renderData() {
-            if (currentViewMode === 'tree') {
-                renderTreeRoot();
-            } else {
-                renderList(currentPath);
+        // ─── SEARCH ─────────────────────────────
+        function triggerSearch() {
+            const query = document.getElementById('search-input').value.trim();
+            if (!query) {
+                // Clear search → go back to normal view
+                searchQuery = "";
+                renderData();
+                return;
             }
+            onSearch(query);
         }
 
-        // ==========================================
-        // EXPLORER VIEW LOGIC
-        // ==========================================
-        function renderList(path) {
-            currentPath = path;
+        function onSearch(query) {
+            searchQuery = query.trim();
+            // Show explorer nav in search mode
+            document.getElementById('address-bar').style.visibility = 'hidden';
+            document.getElementById('btn-up').style.display = 'none';
+            document.getElementById('btn-home').style.display = 'none';
+            document.getElementById('list-header').style.display = 'grid';
+            renderSearch(searchQuery);
+        }
+
+        function renderSearch(query) {
             const listContainer = document.getElementById('file-list');
             listContainer.innerHTML = '';
 
-            // Update Address Bar
+            const ql = query.toLowerCase();
+            const matches = fileData.filter(f => f.Name.toLowerCase().includes(ql));
+
+            if (matches.length === 0) {
+                listContainer.innerHTML = `<div style="padding:30px; text-align:center; color:#888;">No results found for "<b>${escHtml(query)}</b>"</div>`;
+                return;
+            }
+
+            // address bar shows search context
             const addressBar = document.getElementById('address-bar');
-            addressBar.innerHTML = '';
-            const parts = path.split('/').filter(p => p);
+            addressBar.style.visibility = 'visible';
+            addressBar.innerHTML = `<span style="color:#888;">🔍 Search results for:</span> <b>${escHtml(query)}</b> <span style="color:#666;">(${matches.length} items)</span>`;
+            document.getElementById('btn-home').style.display = 'inline-block';
 
-            let bcHTML = `<span class="address-part" onclick="renderList('')">Root</span>`;
-            let currentBcPath = "";
-            parts.forEach((p, index) => {
-                currentBcPath += currentBcPath ? '/' + p : p;
-                bcHTML += `<span style="color:#666; margin: 0 4px;">></span><span class="address-part" onclick="renderList('${currentBcPath}')">${p}</span>`;
-            });
-            addressBar.innerHTML = bcHTML;
-
-            // Update Up Button
-            const btnUp = document.getElementById('btn-up');
-            btnUp.disabled = !path;
-            btnUp.onclick = () => {
-                if (!path) return;
-                let newParts = path.split('/');
-                newParts.pop();
-                renderList(newParts.join('/'));
-            };
-
-            // Filter files
-            const items = fileData.filter(f => f.ParentPath === path);
-
-            if (items.length === 0 && fileData.length === 0) {
-                showEmptyPlaceholder(listContainer);
-                return;
-            }
-
-            if (items.length === 0 && fileData.length > 0) {
-                listContainer.innerHTML = `<div style="padding: 30px; text-align: center; color: #888; font-size: 14px;">This folder is empty.</div>`;
-                return;
-            }
-
-            sortItems(items);
-
-            items.forEach((item, index) => {
-                const row = document.createElement('div');
-                row.className = 'row';
-                
-                row.onclick = (e) => {
-                    document.querySelectorAll('.row').forEach(r => r.classList.remove('selected'));
-                    row.classList.add('selected');
-                };
-
-                row.ondblclick = () => {
-                    document.querySelectorAll('.row').forEach(r => r.classList.remove('selected'));
-                    if (item.IsFolder) renderList(item.Path);
-                };
-                
-                row.oncontextmenu = (e) => {
-                    e.preventDefault();
-                    document.querySelectorAll('.row').forEach(r => r.classList.remove('selected'));
-                    row.classList.add('selected');
-                    contextItem = item;
-                    
-                    const menu = document.getElementById('context-menu');
-                    menu.style.display = 'block';
-                    menu.style.left = e.pageX + 'px';
-                    menu.style.top = e.pageY + 'px';
-                };
-
-                let icon = item.IsFolder ? '📁' : getFileIcon(item.Name);
-                let type = item.IsFolder ? 'File folder' : getExtension(item.Name) + ' File';
-                let dateStr = item.DateModified || '';
-                
-                let sizeStr = '';
-                let containsStr = '';
-
-                if (item.IsFolder) {
-                    sizeStr = formatBytesExact(item.TotalSize);
-                    containsStr = formatNumber(item.FilesCount) + ' Files, ' + formatNumber(item.FoldersCount) + ' Folders';
-                } else {
-                    sizeStr = formatBytesExact(item.Size);
-                    containsStr = '-';
-                }
-
-                row.innerHTML = `
-                    <div class="col-name"><span class="icon">${icon}</span>${item.Name}</div>
-                    <div>${dateStr}</div>
-                    <div>${type}</div>
-                    <div class="col-size">${sizeStr}</div>
-                    <div class="col-size" style="text-align: right; color: #aaa;">${containsStr}</div>
-                `;
+            sortItems(matches);
+            matches.forEach(item => {
+                const row = buildExplorerRow(item, true);
                 listContainer.appendChild(row);
             });
         }
 
-        // ==========================================
-        // TREE VIEW LOGIC
-        // ==========================================
-        function renderTreeRoot() {
+        // ─── EXPLORER VIEW ──────────────────────
+        function renderList(path) {
+            currentPath = path;
+            searchQuery = "";
+            document.getElementById('search-input').value = "";
+
             const listContainer = document.getElementById('file-list');
             listContainer.innerHTML = '';
 
-            if (fileData.length === 0) {
-                showEmptyPlaceholder(listContainer);
+            // Address Bar
+            const addressBar = document.getElementById('address-bar');
+            addressBar.innerHTML = '';
+            addressBar.style.visibility = 'visible';
+            const parts = path.split('/').filter(p => p);
+            let bcHTML = `<span class="address-part" onclick="renderList('')">Root</span>`;
+            let bcPath = "";
+            parts.forEach(p => {
+                bcPath += (bcPath ? '/' : '') + p;
+                const cp = bcPath;
+                bcHTML += `<span style="color:#666; margin:0 4px;">›</span><span class="address-part" onclick="renderList('${cp}')">${p}</span>`;
+            });
+            addressBar.innerHTML = bcHTML;
+
+            // Up button
+            const btnUp = document.getElementById('btn-up');
+            btnUp.disabled = !path;
+            btnUp.onclick = () => {
+                if (!path) return;
+                const np = path.split('/');
+                np.pop();
+                renderList(np.join('/'));
+            };
+            document.getElementById('btn-home').style.display = 'inline-block';
+
+            const items = fileData.filter(f => f.ParentPath === path);
+
+            if (items.length === 0 && fileData.length === 0) { showEmptyPlaceholder(listContainer); return; }
+            if (items.length === 0) {
+                listContainer.innerHTML = `<div style="padding:30px; text-align:center; color:#888;">This folder is empty.</div>`;
                 return;
             }
 
-            const rootUl = document.createElement('div');
-            rootUl.className = 'tree-container';
+            sortItems(items);
+            items.forEach(item => {
+                listContainer.appendChild(buildExplorerRow(item, false));
+            });
+        }
 
-            renderTreeNodes("", rootUl, 0);
-            listContainer.appendChild(rootUl);
+        function buildExplorerRow(item, showPath) {
+            const row = document.createElement('div');
+            row.className = 'row';
+
+            row.onclick = () => {
+                document.querySelectorAll('.row').forEach(r => r.classList.remove('selected'));
+                row.classList.add('selected');
+            };
+            row.ondblclick = () => {
+                document.querySelectorAll('.row').forEach(r => r.classList.remove('selected'));
+                if (item.IsFolder) {
+                    document.getElementById('view-mode').value = 'explorer';
+                    currentViewMode = 'explorer';
+                    document.getElementById('list-header').style.display = 'grid';
+                    renderList(item.Path);
+                }
+            };
+            row.oncontextmenu = (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.row').forEach(r => r.classList.remove('selected'));
+                row.classList.add('selected');
+                contextItem = item;
+                const menu = document.getElementById('context-menu');
+                menu.style.display = 'block';
+                menu.style.left = e.pageX + 'px';
+                menu.style.top  = e.pageY + 'px';
+            };
+
+            const icon       = item.IsFolder ? '📁' : getFileIcon(item.Name);
+            const type       = item.IsFolder ? 'File folder' : getExtension(item.Name) + ' File';
+            const dateStr    = item.DateModified || '';
+            const sizeStr    = item.IsFolder ? formatBytesExact(item.TotalSize) : formatBytesExact(item.Size);
+            const containsStr = item.IsFolder
+                ? `${formatNumber(item.FilesCount)} Files, ${formatNumber(item.FoldersCount)} Folders`
+                : '—';
+
+            const nameCell = showPath
+                ? `<div class="col-name"><span class="icon">${icon}</span><div><div>${item.Name}</div><div class="search-path-hint">${item.ParentPath || 'Root'}</div></div></div>`
+                : `<div class="col-name"><span class="icon">${icon}</span>${item.Name}</div>`;
+
+            row.innerHTML = `
+                ${nameCell}
+                <div>${dateStr}</div>
+                <div>${type}</div>
+                <div class="col-size">${sizeStr}</div>
+                <div class="col-size" style="color:#aaa;">${containsStr}</div>
+            `;
+            return row;
+        }
+
+        // ─── TREE VIEW ──────────────────────────
+        function renderTreeRoot() {
+            const listContainer = document.getElementById('file-list');
+            listContainer.innerHTML = '';
+            if (fileData.length === 0) { showEmptyPlaceholder(listContainer); return; }
+            const root = document.createElement('div');
+            root.className = 'tree-container';
+            renderTreeNodes("", root, 0);
+            listContainer.appendChild(root);
         }
 
         function renderTreeNodes(path, container, level) {
             const items = fileData.filter(f => f.ParentPath === path);
             sortItems(items);
-
             items.forEach(item => {
                 const row = document.createElement('div');
                 row.className = 'tree-row';
+                const indent = `<span style="display:inline-block;width:${level * 20}px"></span>`;
+                const hasChildren = item.IsFolder && fileData.some(f => f.ParentPath === item.Path);
+                const toggle = hasChildren
+                    ? `<span class="tree-toggle">▶</span>`
+                    : `<span class="tree-toggle" style="visibility:hidden">▶</span>`;
+                const icon    = item.IsFolder ? '📁' : getFileIcon(item.Name);
+                const sizeStr = item.IsFolder ? formatBytesExact(item.TotalSize) : formatBytesExact(item.Size);
 
-                const indent = `<span style="display:inline-block; width:${level * 20}px"></span>`;
-                let toggle = `<span class="tree-toggle" style="visibility:hidden">▶</span>`;
-
-                let hasChildren = false;
-                if (item.IsFolder) {
-                    hasChildren = fileData.some(f => f.ParentPath === item.Path);
-                    if (hasChildren) {
-                        toggle = `<span class="tree-toggle">▶</span>`;
-                    }
-                }
-
-                let icon = item.IsFolder ? '📁' : getFileIcon(item.Name);
-                let sizeStr = (item.IsFolder || item.Size == null) ? '' : formatBytes(item.Size);
-                let dateStr = item.DateModified || '';
-
-                const nodeHTML = `
+                row.innerHTML = `
                     <div class="tree-item" data-path="${item.Path}" data-loaded="false" data-open="false">
-                        ${indent}
-                        ${toggle}
+                        ${indent}${toggle}
                         <span class="tree-name"><span class="icon">${icon}</span>${item.Name}</span>
                         <div class="tree-details">
-                            <span style="width: 120px; text-align: right;">${dateStr}</span>
-                            <span style="width: 80px; text-align: right;">${sizeStr}</span>
+                            <span style="width:120px;text-align:right">${item.DateModified || ''}</span>
+                            <span style="width:80px;text-align:right">${sizeStr}</span>
                         </div>
                     </div>
                     <div class="tree-children"></div>
                 `;
-                row.innerHTML = nodeHTML;
 
                 const itemDiv = row.querySelector('.tree-item');
-                itemDiv.onclick = (e) => {
+                itemDiv.onclick = () => {
                     if (item.IsFolder && hasChildren) {
-                        const isOpen = itemDiv.getAttribute('data-open') === 'true';
-                        const isLoaded = itemDiv.getAttribute('data-loaded') === 'true';
-                        const childrenDiv = row.querySelector('.tree-children');
-                        const toggleSpan = row.querySelector('.tree-toggle');
-
+                        const isOpen    = itemDiv.getAttribute('data-open') === 'true';
+                        const isLoaded  = itemDiv.getAttribute('data-loaded') === 'true';
+                        const childDiv  = row.querySelector('.tree-children');
+                        const tog       = row.querySelector('.tree-toggle');
                         if (isOpen) {
-                            childrenDiv.style.display = 'none';
+                            childDiv.style.display = 'none';
                             itemDiv.setAttribute('data-open', 'false');
-                            toggleSpan.classList.remove('open');
+                            tog.classList.remove('open');
                         } else {
-                            if (!isLoaded) {
-                                renderTreeNodes(item.Path, childrenDiv, level + 1);
-                                itemDiv.setAttribute('data-loaded', 'true');
-                            }
-                            childrenDiv.style.display = 'block';
+                            if (!isLoaded) { renderTreeNodes(item.Path, childDiv, level + 1); itemDiv.setAttribute('data-loaded', 'true'); }
+                            childDiv.style.display = 'block';
                             itemDiv.setAttribute('data-open', 'true');
-                            toggleSpan.classList.add('open');
+                            tog.classList.add('open');
                         }
                     }
                 };
-
-                container.appendChild(row);
-            });
-        }
-
-        // ==========================================
-        // CONTEXT MENU & PROPERTIES
-        // ==========================================
-        let contextItem = null;
-        document.addEventListener('click', (e) => {
-            const menu = document.getElementById('context-menu');
-            if (menu) menu.style.display = 'none';
-        });
-
-        // Add context menu logic for Tree View as well
-        document.addEventListener('contextmenu', (e) => {
-            const treeItem = e.target.closest('.tree-item');
-            if (treeItem) {
-                e.preventDefault();
-                const path = treeItem.getAttribute('data-path');
-                const item = fileData.find(f => f.Path === path);
-                if (item) {
+                itemDiv.oncontextmenu = (e) => {
+                    e.preventDefault();
                     contextItem = item;
                     const menu = document.getElementById('context-menu');
                     menu.style.display = 'block';
                     menu.style.left = e.pageX + 'px';
-                    menu.style.top = e.pageY + 'px';
-                }
-            }
-        });
+                    menu.style.top  = e.pageY + 'px';
+                };
+                container.appendChild(row);
+            });
+        }
+
+        // ─── CONTEXT MENU & PROPERTIES ──────────
+        let contextItem = null;
+        document.addEventListener('click', () => { document.getElementById('context-menu').style.display = 'none'; });
 
         function showProperties() {
             if (!contextItem) return;
             const item = contextItem;
-            
             document.getElementById('prop-title').innerText = item.Name + ' Properties';
-            document.getElementById('prop-name').value = item.Name;
-            document.getElementById('prop-icon').innerText = item.IsFolder ? '📁' : getFileIcon(item.Name);
-            document.getElementById('prop-type').innerText = item.IsFolder ? 'File folder' : (getExtension(item.Name) + ' File');
-            document.getElementById('prop-location').innerText = item.ParentPath ? ('Local Disk:\\' + item.ParentPath.replace(/\//g, '\\')) : 'Local Disk:\\';
+            document.getElementById('prop-name').value      = item.Name;
+            document.getElementById('prop-icon').innerText  = item.IsFolder ? '📁' : getFileIcon(item.Name);
+            document.getElementById('prop-type').innerText  = item.IsFolder ? 'File folder' : (getExtension(item.Name) + ' File');
+            document.getElementById('prop-location').innerText = item.ParentPath
+                ? ('Local Disk:\\' + item.ParentPath.replace(/\//g, '\\'))
+                : 'Local Disk:\\';
             document.getElementById('prop-date').innerText = item.DateModified || 'Unknown';
-            
+
             const containsRow = document.getElementById('prop-contains-row');
             if (item.IsFolder) {
-                document.getElementById('prop-size').innerText = formatBytesExact(item.TotalSize) + ' (' + formatNumber(item.TotalSize) + ' bytes)';
+                document.getElementById('prop-size').innerText      = formatBytesExact(item.TotalSize) + ' (' + formatNumber(item.TotalSize) + ' bytes)';
                 document.getElementById('prop-size-disk').innerText = formatBytesExact(item.TotalSize) + ' (' + formatNumber(item.TotalSize) + ' bytes)';
-                document.getElementById('prop-contains').innerText = formatNumber(item.FilesCount) + ' Files, ' + formatNumber(item.FoldersCount) + ' Folders';
+                document.getElementById('prop-contains').innerText  = formatNumber(item.FilesCount) + ' Files, ' + formatNumber(item.FoldersCount) + ' Folders';
                 containsRow.style.display = 'flex';
             } else {
-                document.getElementById('prop-size').innerText = formatBytesExact(item.Size) + ' (' + formatNumber(item.Size) + ' bytes)';
+                document.getElementById('prop-size').innerText      = formatBytesExact(item.Size) + ' (' + formatNumber(item.Size) + ' bytes)';
                 document.getElementById('prop-size-disk').innerText = formatBytesExact(item.Size) + ' (' + formatNumber(item.Size) + ' bytes)';
                 containsRow.style.display = 'none';
             }
-            
             document.getElementById('dialog-overlay').style.display = 'block';
         }
-        
-        function closeProperties() {
-            document.getElementById('dialog-overlay').style.display = 'none';
-        }
-        
-        function formatBytesExact(bytes) {
-            if (bytes === 0) return '0 bytes';
-            const k = 1024;
-            const sizes = ['bytes', 'KB', 'MB', 'GB', 'TB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            if (i === 0) return bytes + ' bytes';
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
+        function closeProperties() { document.getElementById('dialog-overlay').style.display = 'none'; }
 
-        function formatNumber(num) {
-            return (num || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-
-        // ==========================================
-        // HELPERS
-        // ==========================================
+        // ─── HELPERS ────────────────────────────
         function sortItems(items) {
             items.sort((a, b) => {
                 if (a.IsFolder && !b.IsFolder) return -1;
@@ -763,84 +757,70 @@
                 return a.Name.toLowerCase().localeCompare(b.Name.toLowerCase());
             });
         }
-
         function showEmptyPlaceholder(container) {
-            container.innerHTML = `<div style="padding: 30px; text-align: center; color: #888; font-size: 14px; line-height: 1.5;">
-                <b>No data loaded yet.</b><br><br>
-                To view your files, you can <b>Drag & Drop</b> your <code>structure.json</code> file anywhere on this window.<br><br>
-                Or, use the provided PowerShell script which will automatically generate a new HTML file with data populated.
+            container.innerHTML = `<div style="padding:30px; text-align:center; color:#888; line-height:1.8;">
+                <b>No data loaded yet.</b><br>
+                <b>Drag & Drop</b> your <code>structure.json</code> here, or run the PowerShell script to generate a new HTML file.
             </div>`;
         }
-
-        function getExtension(filename) {
-            const parts = filename.split('.');
-            return parts.length > 1 ? parts.pop().toUpperCase() : 'File';
+        function getExtension(name) {
+            const p = name.split('.');
+            return p.length > 1 ? p.pop().toUpperCase() : 'File';
         }
-
-        function getFileIcon(filename) {
-            const ext = filename.split('.').pop().toLowerCase();
-            const icons = {
-                'pdf': '📕',
-                'txt': '📄', 'md': '📄', 'csv': '📄',
-                'doc': '📘', 'docx': '📘',
-                'xls': '📗', 'xlsx': '📗',
-                'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️', 'gif': '🖼️',
-                'zip': '📦', 'rar': '📦', '7z': '📦', 'tar': '📦', 'gz': '📦',
-                'json': '📜', 'html': '🌐', 'js': '📜', 'css': '🎨', 'php': '🐘', 'py': '🐍',
-                'xml': '📜', 'yml': '⚙️', 'yaml': '⚙️', 'ini': '⚙️', 'conf': '⚙️',
-                'exe': '⚙️', 'bat': '⚙️', 'ps1': '⚙️', 'sh': '⚙️'
+        function getFileIcon(name) {
+            const ext = name.split('.').pop().toLowerCase();
+            const map = {
+                pdf:'📕', txt:'📄', md:'📄', csv:'📄',
+                doc:'📘', docx:'📘', xls:'📗', xlsx:'📗',
+                jpg:'🖼️', jpeg:'🖼️', png:'🖼️', gif:'🖼️',
+                zip:'📦', rar:'📦', '7z':'📦', tar:'📦', gz:'📦',
+                json:'📜', html:'🌐', js:'📜', css:'🎨', php:'🐘', py:'🐍',
+                xml:'📜', yml:'⚙️', yaml:'⚙️', ini:'⚙️', conf:'⚙️',
+                exe:'⚙️', bat:'⚙️', ps1:'⚙️', sh:'⚙️',
+                sql:'🗄️', bak:'🗄️', db:'🗄️', mdf:'🗄️', ldf:'🗄️',
             };
-            return icons[ext] || '📄';
+            return map[ext] || '📄';
         }
-
-        function formatBytes(bytes) {
-            if (bytes === 0) return '0 KB';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        function formatBytesExact(bytes) {
+            if (!bytes || bytes === 0) return '0 Bytes';
+            const k = 1024, sizes = ['Bytes','KB','MB','GB','TB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
-            if (i === 0) return bytes + ' Bytes';
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(0)) + ' ' + sizes[i];
+            return i === 0 ? bytes + ' Bytes' : parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        function formatNumber(n) {
+            return (n || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+        function escHtml(s) {
+            return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         }
 
-        // Drag and Drop Logic for structure.json
+        // ─── DRAG & DROP ────────────────────────
         const dz = document.getElementById('drop-zone');
-        document.body.ondragover = e => {
-            e.preventDefault();
-            dz.style.display = 'flex';
-        };
-        document.body.ondragleave = e => {
-            dz.style.display = 'none';
-        };
+        document.body.ondragover = e => { e.preventDefault(); dz.style.display = 'flex'; };
+        document.body.ondragleave = () => { dz.style.display = 'none'; };
         document.body.ondrop = e => {
-            e.preventDefault();
-            dz.style.display = 'none';
-
+            e.preventDefault(); dz.style.display = 'none';
             const file = e.dataTransfer.files[0];
             if (file && file.name.endsWith('.json')) {
                 const reader = new FileReader();
-                reader.onload = e => {
+                reader.onload = ev => {
                     try {
-                        const data = JSON.parse(e.target.result);
+                        const data = JSON.parse(ev.target.result);
                         if (Array.isArray(data)) {
                             fileData.length = 0;
                             fileData.push(...data);
+                            initSummaryBar();
                             renderData();
-                        } else {
-                            alert('Invalid JSON structure. Expected an array of files.');
-                        }
-                    } catch (err) {
-                        alert('Error parsing JSON file: ' + err.message);
-                    }
+                        } else { alert('Expected a JSON array.'); }
+                    } catch(err) { alert('Parse error: ' + err.message); }
                 };
                 reader.readAsText(file);
-            } else {
-                alert('Please drop a valid .json file (e.g., structure.json).');
-            }
+            } else { alert('Please drop a .json file.'); }
         };
 
-        // Initial Render
+        // ─── STARTUP ────────────────────────────
+        initSummaryBar();
         renderData();
     </script>
 </body>
-
 </html>
