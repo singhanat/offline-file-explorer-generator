@@ -223,6 +223,160 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+
+        .row {
+            border: 1px solid transparent; /* Prepare for selected state outline */
+        }
+        .row.selected {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        /* Context Menu */
+        .context-menu {
+            position: fixed;
+            background: #2b2b2b;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 4px 0;
+            min-width: 150px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1000;
+            color: #ccc;
+        }
+        .context-menu-item {
+            padding: 6px 15px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .context-menu-item:hover {
+            background: #444;
+        }
+
+        /* Properties Dialog */
+        .dialog-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: transparent;
+            display: none;
+            z-index: 1000;
+        }
+        .dialog {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 360px;
+            background-color: #f0f0f0;
+            color: #000;
+            border-radius: 6px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.3);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #aaa;
+        }
+        .dialog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #ffffff;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+        }
+        .dialog-title {
+            font-size: 13px;
+            color: #000;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .dialog-close {
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 4px;
+        }
+        .dialog-close:hover { background: #e81123; color: white; }
+        .dialog-content {
+            background: #ffffff;
+            flex: 1;
+            padding: 0;
+            margin: 0;
+        }
+        .dialog-tabs {
+            display: flex;
+            border-bottom: 1px solid #d9d9d9;
+            padding: 0 2px;
+            margin: 0 10px;
+        }
+        .dialog-tab {
+            padding: 4px 10px;
+            font-size: 12px;
+            border: 1px solid transparent;
+            cursor: default;
+            margin-bottom: -1px;
+            color: #000;
+        }
+        .dialog-tab.active {
+            background: #fff;
+            border: 1px solid #d9d9d9;
+            border-bottom-color: #fff;
+            border-top-color: #0078d7;
+            border-radius: 2px 2px 0 0;
+        }
+        .dialog-body {
+            padding: 15px;
+            font-size: 12px;
+        }
+        .info-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .info-label {
+            width: 90px;
+            color: #333;
+        }
+        .info-value {
+            flex: 1;
+            color: #000;
+            word-break: break-all;
+        }
+        .hr {
+            height: 1px;
+            background: #d9d9d9;
+            margin: 15px 0;
+        }
+        .dialog-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 12px;
+            background: #f0f0f0;
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+            border-top: 1px solid #d9d9d9;
+        }
+        .dialog-btn {
+            padding: 4px 15px;
+            border: 1px solid #adadad;
+            background: #e1e1e1;
+            border-radius: 4px;
+            cursor: default;
+            font-size: 12px;
+            color: #000;
+        }
+        .dialog-btn:hover { background: #e5f1fb; border-color: #0078d7; }
     </style>
 </head>
 
@@ -247,6 +401,59 @@
     <div class="flex-list" id="file-list"></div>
 
     <div class="drop-zone" id="drop-zone">Drop structure.json here!</div>
+
+    <div id="context-menu" class="context-menu">
+        <div class="context-menu-item" onclick="showProperties()">⚙️ Properties</div>
+    </div>
+
+    <div id="dialog-overlay" class="dialog-overlay">
+        <div class="dialog">
+            <div class="dialog-header">
+                <div class="dialog-title" id="prop-title">Properties</div>
+                <div class="dialog-close" onclick="closeProperties()">✕</div>
+            </div>
+            <div class="dialog-content">
+                <div class="dialog-tabs">
+                    <div class="dialog-tab active">General</div>
+                </div>
+                <div class="dialog-body">
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                        <div id="prop-icon" style="font-size: 32px; width: 40px; text-align: center;">📁</div>
+                        <input type="text" id="prop-name" readonly style="flex: 1; padding: 4px; border: 1px solid #ccc;">
+                    </div>
+                    <div class="hr"></div>
+                    <div class="info-row">
+                        <div class="info-label">Type:</div>
+                        <div class="info-value" id="prop-type">File folder</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Location:</div>
+                        <div class="info-value" id="prop-location">C:\</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Size:</div>
+                        <div class="info-value" id="prop-size">0 bytes</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Size on disk:</div>
+                        <div class="info-value" id="prop-size-disk">0 bytes</div>
+                    </div>
+                    <div class="info-row" id="prop-contains-row">
+                        <div class="info-label">Contains:</div>
+                        <div class="info-value" id="prop-contains">0 Files, 0 Folders</div>
+                    </div>
+                    <div class="hr"></div>
+                    <div class="info-row">
+                        <div class="info-label">Created:</div>
+                        <div class="info-value" id="prop-date">Monday...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <button class="dialog-btn" onclick="closeProperties()" style="min-width: 70px;">OK</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // ==========================================
@@ -340,12 +547,31 @@
 
             sortItems(items);
 
-            items.forEach(item => {
+            items.forEach((item, index) => {
                 const row = document.createElement('div');
                 row.className = 'row';
-                if (item.IsFolder) {
-                    row.onclick = () => renderList(item.Path);
-                }
+                
+                row.onclick = (e) => {
+                    document.querySelectorAll('.row').forEach(r => r.classList.remove('selected'));
+                    row.classList.add('selected');
+                };
+
+                row.ondblclick = () => {
+                    document.querySelectorAll('.row').forEach(r => r.classList.remove('selected'));
+                    if (item.IsFolder) renderList(item.Path);
+                };
+                
+                row.oncontextmenu = (e) => {
+                    e.preventDefault();
+                    document.querySelectorAll('.row').forEach(r => r.classList.remove('selected'));
+                    row.classList.add('selected');
+                    contextItem = item;
+                    
+                    const menu = document.getElementById('context-menu');
+                    menu.style.display = 'block';
+                    menu.style.left = e.pageX + 'px';
+                    menu.style.top = e.pageY + 'px';
+                };
 
                 let icon = item.IsFolder ? '📁' : getFileIcon(item.Name);
                 let type = item.IsFolder ? 'File folder' : getExtension(item.Name) + ' File';
@@ -444,6 +670,97 @@
 
                 container.appendChild(row);
             });
+        }
+
+        // ==========================================
+        // CONTEXT MENU & PROPERTIES
+        // ==========================================
+        let contextItem = null;
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('context-menu');
+            if (menu) menu.style.display = 'none';
+        });
+
+        // Add context menu logic for Tree View as well
+        document.addEventListener('contextmenu', (e) => {
+            const treeItem = e.target.closest('.tree-item');
+            if (treeItem) {
+                e.preventDefault();
+                const path = treeItem.getAttribute('data-path');
+                const item = fileData.find(f => f.Path === path);
+                if (item) {
+                    contextItem = item;
+                    const menu = document.getElementById('context-menu');
+                    menu.style.display = 'block';
+                    menu.style.left = e.pageX + 'px';
+                    menu.style.top = e.pageY + 'px';
+                }
+            }
+        });
+
+        function getFolderStats(folderPath) {
+            let files = 0;
+            let folders = 0;
+            let totalSize = 0;
+            
+            function scan(path) {
+                const children = fileData.filter(f => f.ParentPath === path);
+                children.forEach(child => {
+                    if (child.IsFolder) {
+                        folders++;
+                        scan(child.Path);
+                    } else {
+                        files++;
+                        totalSize += (child.Size || 0);
+                    }
+                });
+            }
+            scan(folderPath);
+            return { files, folders, totalSize };
+        }
+
+        function showProperties() {
+            if (!contextItem) return;
+            const item = contextItem;
+            
+            document.getElementById('prop-title').innerText = item.Name + ' Properties';
+            document.getElementById('prop-name').value = item.Name;
+            document.getElementById('prop-icon').innerText = item.IsFolder ? '📁' : getFileIcon(item.Name);
+            document.getElementById('prop-type').innerText = item.IsFolder ? 'File folder' : (getExtension(item.Name) + ' File');
+            document.getElementById('prop-location').innerText = item.ParentPath ? ('Local Disk:\\' + item.ParentPath.replace(/\//g, '\\')) : 'Local Disk:\\';
+            document.getElementById('prop-date').innerText = item.DateModified || 'Unknown';
+            
+            const containsRow = document.getElementById('prop-contains-row');
+            if (item.IsFolder) {
+                const stats = getFolderStats(item.Path);
+                document.getElementById('prop-size').innerText = formatBytesExact(stats.totalSize) + ' (' + formatNumber(stats.totalSize) + ' bytes)';
+                document.getElementById('prop-size-disk').innerText = formatBytesExact(stats.totalSize) + ' (' + formatNumber(stats.totalSize) + ' bytes)';
+                document.getElementById('prop-contains').innerText = formatNumber(stats.files) + ' Files, ' + formatNumber(stats.folders) + ' Folders';
+                containsRow.style.display = 'flex';
+            } else {
+                document.getElementById('prop-size').innerText = formatBytesExact(item.Size) + ' (' + formatNumber(item.Size) + ' bytes)';
+                document.getElementById('prop-size-disk').innerText = formatBytesExact(item.Size) + ' (' + formatNumber(item.Size) + ' bytes)';
+                containsRow.style.display = 'none';
+            }
+            
+            document.getElementById('dialog-overlay').style.display = 'block';
+        }
+        
+        function closeProperties() {
+            document.getElementById('dialog-overlay').style.display = 'none';
+        }
+        
+        function formatBytesExact(bytes) {
+            if (bytes === 0) return '0 bytes';
+            const k = 1024;
+            const sizes = ['bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            if (i === 0) return bytes + ' bytes';
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatNumber(num) {
+            return (num || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
         // ==========================================
