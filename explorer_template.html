@@ -89,7 +89,7 @@
         .list-header,
         .row {
             display: grid;
-            grid-template-columns: 2.5fr 1fr 1fr 1fr;
+            grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
             padding: 6px 15px;
             font-size: 13px;
             align-items: center;
@@ -395,7 +395,8 @@
         <div>Name</div>
         <div>Date modified</div>
         <div>Type</div>
-        <div class="col-size">Size</div>
+        <div class="col-size">Total Size</div>
+        <div class="col-size">Contains</div>
     </div>
 
     <div class="flex-list" id="file-list"></div>
@@ -575,14 +576,25 @@
 
                 let icon = item.IsFolder ? '📁' : getFileIcon(item.Name);
                 let type = item.IsFolder ? 'File folder' : getExtension(item.Name) + ' File';
-                let sizeStr = (item.IsFolder || item.Size == null) ? '' : formatBytes(item.Size);
                 let dateStr = item.DateModified || '';
+                
+                let sizeStr = '';
+                let containsStr = '';
+
+                if (item.IsFolder) {
+                    sizeStr = formatBytesExact(item.TotalSize);
+                    containsStr = formatNumber(item.FilesCount) + ' Files, ' + formatNumber(item.FoldersCount) + ' Folders';
+                } else {
+                    sizeStr = formatBytesExact(item.Size);
+                    containsStr = '-';
+                }
 
                 row.innerHTML = `
                     <div class="col-name"><span class="icon">${icon}</span>${item.Name}</div>
                     <div>${dateStr}</div>
                     <div>${type}</div>
                     <div class="col-size">${sizeStr}</div>
+                    <div class="col-size" style="text-align: right; color: #aaa;">${containsStr}</div>
                 `;
                 listContainer.appendChild(row);
             });
@@ -698,27 +710,6 @@
             }
         });
 
-        function getFolderStats(folderPath) {
-            let files = 0;
-            let folders = 0;
-            let totalSize = 0;
-            
-            function scan(path) {
-                const children = fileData.filter(f => f.ParentPath === path);
-                children.forEach(child => {
-                    if (child.IsFolder) {
-                        folders++;
-                        scan(child.Path);
-                    } else {
-                        files++;
-                        totalSize += (child.Size || 0);
-                    }
-                });
-            }
-            scan(folderPath);
-            return { files, folders, totalSize };
-        }
-
         function showProperties() {
             if (!contextItem) return;
             const item = contextItem;
@@ -732,10 +723,9 @@
             
             const containsRow = document.getElementById('prop-contains-row');
             if (item.IsFolder) {
-                const stats = getFolderStats(item.Path);
-                document.getElementById('prop-size').innerText = formatBytesExact(stats.totalSize) + ' (' + formatNumber(stats.totalSize) + ' bytes)';
-                document.getElementById('prop-size-disk').innerText = formatBytesExact(stats.totalSize) + ' (' + formatNumber(stats.totalSize) + ' bytes)';
-                document.getElementById('prop-contains').innerText = formatNumber(stats.files) + ' Files, ' + formatNumber(stats.folders) + ' Folders';
+                document.getElementById('prop-size').innerText = formatBytesExact(item.TotalSize) + ' (' + formatNumber(item.TotalSize) + ' bytes)';
+                document.getElementById('prop-size-disk').innerText = formatBytesExact(item.TotalSize) + ' (' + formatNumber(item.TotalSize) + ' bytes)';
+                document.getElementById('prop-contains').innerText = formatNumber(item.FilesCount) + ' Files, ' + formatNumber(item.FoldersCount) + ' Folders';
                 containsRow.style.display = 'flex';
             } else {
                 document.getElementById('prop-size').innerText = formatBytesExact(item.Size) + ' (' + formatNumber(item.Size) + ' bytes)';

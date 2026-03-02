@@ -35,11 +35,53 @@ $items = Get-ChildItem -Path $parentPath -Recurse -Force -ErrorAction SilentlyCo
         ParentPath   = $parentFolder
         IsFolder     = $_.PSIsContainer
         Size         = if ($_.PSIsContainer) { $null } else { $_.Length }
+        TotalSize    = 0
+        FilesCount   = 0
+        FoldersCount = 0
         DateModified = $_.LastWriteTime.ToString("M/d/yyyy h:mm tt")
     }
 }
 
-Write-Host "Found $($items.Count) items. Processing data..." -ForegroundColor Cyan
+Write-Host "Found $($items.Count) items. Calculating folder sizes..." -ForegroundColor Cyan
+
+$folderStats = @{}
+foreach ($item in $items) {
+    if ($item.IsFolder) {
+        $folderStats[$item.Path] = @{ TotalSize = 0; FilesCount = 0; FoldersCount = 0 }
+    }
+}
+
+foreach ($item in $items) {
+    $parent = $item.ParentPath
+    while ($parent -ne "") {
+        if ($folderStats.ContainsKey($parent)) {
+            if (-not $item.IsFolder) {
+                $folderStats[$parent].TotalSize += $item.Size
+                $folderStats[$parent].FilesCount += 1
+            }
+            else {
+                $folderStats[$parent].FoldersCount += 1
+            }
+        }
+        if ($parent.Contains('/')) {
+            $parent = $parent.Substring(0, $parent.LastIndexOf('/'))
+        }
+        else {
+            $parent = ""
+        }
+    }
+}
+
+foreach ($item in $items) {
+    if ($item.IsFolder) {
+        $stats = $folderStats[$item.Path]
+        $item.TotalSize = if ($null -eq $stats.TotalSize) { 0 } else { $stats.TotalSize }
+        $item.FilesCount = $stats.FilesCount
+        $item.FoldersCount = $stats.FoldersCount
+    }
+}
+
+Write-Host "Processing data for HTML..." -ForegroundColor Cyan
 
 # Prepare JSON
 $jsonFormatted = @($items) | ConvertTo-Json -Depth 10
