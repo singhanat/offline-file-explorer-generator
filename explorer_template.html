@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
             --text-muted: #888888;
             --border-color: #333333;
         }
+
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
@@ -23,6 +25,7 @@
             flex-direction: column;
             user-select: none;
         }
+
         .toolbar {
             padding: 10px 15px;
             display: flex;
@@ -31,18 +34,35 @@
             border-bottom: 1px solid var(--border-color);
             background-color: #202020;
         }
+
         .btn {
-            background: transparent;
+            background: #2b2b2b;
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            padding: 4px 10px;
-            border-radius: 3px;
+            padding: 5px 12px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
         }
-        .btn:hover { background-color: var(--bg-hover); }
-        .btn:disabled { color: #555; cursor: not-allowed; border-color: #222; }
-        
+
+        .btn:hover {
+            background-color: #3b3b3b;
+        }
+
+        .btn:disabled {
+            color: #555;
+            cursor: not-allowed;
+            border-color: #222;
+            background: transparent;
+        }
+
+        select.btn {
+            padding: 4px 10px;
+            appearance: none;
+            outline: none;
+            width: auto;
+        }
+
         .address-bar {
             flex: 1;
             display: flex;
@@ -53,40 +73,130 @@
             align-items: center;
             gap: 5px;
             font-size: 14px;
+            min-height: 22px;
         }
-        .address-part { cursor: pointer; padding: 2px 4px; border-radius: 2px; }
-        .address-part:hover { background-color: #333; }
-        
-        .list-header, .row {
+
+        .address-part {
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+
+        .address-part:hover {
+            background-color: #333;
+        }
+
+        .list-header,
+        .row {
             display: grid;
             grid-template-columns: 2.5fr 1fr 1fr 1fr;
             padding: 6px 15px;
             font-size: 13px;
             align-items: center;
         }
+
         .list-header {
             border-bottom: 1px solid var(--border-color);
             color: var(--text-muted);
             padding-top: 10px;
             padding-bottom: 10px;
         }
-        
+
         .flex-list {
             flex: 1;
             overflow-y: auto;
         }
-        .row { border-bottom: 1px solid transparent; cursor: pointer; }
-        .row:hover { background-color: var(--bg-hover); }
-        
-        .col-name { display: flex; align-items: center; gap: 8px; }
-        .col-size { text-align: right; }
-        
-        .icon { font-size: 16px; }
-        
+
+        .row {
+            border-bottom: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .row:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .col-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .col-size {
+            text-align: right;
+        }
+
+        .icon {
+            font-size: 16px;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        /* Tree View Styles */
+        .tree-container {
+            padding: 10px 0;
+        }
+
+        .tree-row {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tree-item {
+            display: flex;
+            align-items: center;
+            padding: 4px 15px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .tree-item:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .tree-toggle {
+            display: inline-block;
+            width: 20px;
+            text-align: center;
+            color: #ccc;
+            font-size: 12px;
+            user-select: none;
+            transition: transform 0.2s;
+        }
+
+        .tree-toggle.open {
+            transform: rotate(90deg);
+        }
+
+        .tree-name {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .tree-details {
+            color: var(--text-muted);
+            font-size: 12px;
+            text-align: right;
+            min-width: 280px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 20px;
+        }
+
+        .tree-children {
+            display: none;
+        }
+
         .drop-zone {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -95,29 +205,47 @@
             z-index: 999;
             display: none;
         }
-        
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: var(--bg-dark); }
-        ::-webkit-scrollbar-thumb { background: #444; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
     </style>
 </head>
+
 <body>
     <div class="toolbar">
         <button class="btn" id="btn-up" title="Up to higher level">↑ Up</button>
-        <button class="btn" onclick="renderList('')" title="Root">🏠 Home</button>
+        <button class="btn" id="btn-home" onclick="goHome()" title="Root">🏠 Home</button>
         <div class="address-bar" id="address-bar"></div>
+        <select class="btn" id="view-mode" onchange="changeViewMode(this.value)">
+            <option value="explorer">🗂️ Explorer View</option>
+            <option value="tree">🌳 Tree View</option>
+        </select>
     </div>
-    
-    <div class="list-header">
+
+    <div class="list-header" id="list-header">
         <div>Name</div>
         <div>Date modified</div>
         <div>Type</div>
         <div class="col-size">Size</div>
     </div>
-    
+
     <div class="flex-list" id="file-list"></div>
-    
+
     <div class="drop-zone" id="drop-zone">Drop structure.json here!</div>
 
     <script>
@@ -128,22 +256,62 @@
         // ==========================================
 
         let currentPath = "";
+        let currentViewMode = "explorer";
 
+        function goHome() {
+            if (currentViewMode === 'explorer') {
+                renderList("");
+            }
+        }
+
+        function changeViewMode(mode) {
+            currentViewMode = mode;
+            const addressBar = document.getElementById('address-bar');
+            const btnUp = document.getElementById('btn-up');
+            const listHeader = document.getElementById('list-header');
+            const btnHome = document.getElementById('btn-home');
+
+            if (mode === 'tree') {
+                addressBar.style.visibility = 'hidden';
+                btnUp.style.display = 'none';
+                btnHome.style.display = 'none';
+                listHeader.style.display = 'none';
+                renderTreeRoot();
+            } else {
+                addressBar.style.visibility = 'visible';
+                btnUp.style.display = 'inline-block';
+                btnHome.style.display = 'inline-block';
+                listHeader.style.display = 'grid';
+                renderList(currentPath);
+            }
+        }
+
+        function renderData() {
+            if (currentViewMode === 'tree') {
+                renderTreeRoot();
+            } else {
+                renderList(currentPath);
+            }
+        }
+
+        // ==========================================
+        // EXPLORER VIEW LOGIC
+        // ==========================================
         function renderList(path) {
             currentPath = path;
             const listContainer = document.getElementById('file-list');
             listContainer.innerHTML = '';
-            
+
             // Update Address Bar
             const addressBar = document.getElementById('address-bar');
             addressBar.innerHTML = '';
             const parts = path.split('/').filter(p => p);
-            
+
             let bcHTML = `<span class="address-part" onclick="renderList('')">Root</span>`;
             let currentBcPath = "";
             parts.forEach((p, index) => {
                 currentBcPath += currentBcPath ? '/' + p : p;
-                bcHTML += `<span style="color:#666;">></span><span class="address-part" onclick="renderList('${currentBcPath}')">${p}</span>`;
+                bcHTML += `<span style="color:#666; margin: 0 4px;">></span><span class="address-part" onclick="renderList('${currentBcPath}')">${p}</span>`;
             });
             addressBar.innerHTML = bcHTML;
 
@@ -159,13 +327,9 @@
 
             // Filter files
             const items = fileData.filter(f => f.ParentPath === path);
-            
+
             if (items.length === 0 && fileData.length === 0) {
-                listContainer.innerHTML = `<div style="padding: 30px; text-align: center; color: #888; font-size: 14px;">
-                    <b>No data loaded yet.</b><br><br>
-                    To view your files, you can <b>Drag & Drop</b> your <code>structure.json</code> file anywhere on this window.<br><br>
-                    Or, use the provided PowerShell script which will automatically generate a new HTML file with data populated.
-                </div>`;
+                showEmptyPlaceholder(listContainer);
                 return;
             }
 
@@ -174,12 +338,7 @@
                 return;
             }
 
-            // Sort: Folders first, then alphabetically
-            items.sort((a, b) => {
-                if (a.IsFolder && !b.IsFolder) return -1;
-                if (!a.IsFolder && b.IsFolder) return 1;
-                return a.Name.toLowerCase().localeCompare(b.Name.toLowerCase());
-            });
+            sortItems(items);
 
             items.forEach(item => {
                 const row = document.createElement('div');
@@ -187,12 +346,12 @@
                 if (item.IsFolder) {
                     row.onclick = () => renderList(item.Path);
                 }
-                
+
                 let icon = item.IsFolder ? '📁' : getFileIcon(item.Name);
                 let type = item.IsFolder ? 'File folder' : getExtension(item.Name) + ' File';
                 let sizeStr = (item.IsFolder || item.Size == null) ? '' : formatBytes(item.Size);
                 let dateStr = item.DateModified || '';
-                
+
                 row.innerHTML = `
                     <div class="col-name"><span class="icon">${icon}</span>${item.Name}</div>
                     <div>${dateStr}</div>
@@ -202,7 +361,110 @@
                 listContainer.appendChild(row);
             });
         }
-        
+
+        // ==========================================
+        // TREE VIEW LOGIC
+        // ==========================================
+        function renderTreeRoot() {
+            const listContainer = document.getElementById('file-list');
+            listContainer.innerHTML = '';
+
+            if (fileData.length === 0) {
+                showEmptyPlaceholder(listContainer);
+                return;
+            }
+
+            const rootUl = document.createElement('div');
+            rootUl.className = 'tree-container';
+
+            renderTreeNodes("", rootUl, 0);
+            listContainer.appendChild(rootUl);
+        }
+
+        function renderTreeNodes(path, container, level) {
+            const items = fileData.filter(f => f.ParentPath === path);
+            sortItems(items);
+
+            items.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'tree-row';
+
+                const indent = `<span style="display:inline-block; width:${level * 20}px"></span>`;
+                let toggle = `<span class="tree-toggle" style="visibility:hidden">▶</span>`;
+
+                let hasChildren = false;
+                if (item.IsFolder) {
+                    hasChildren = fileData.some(f => f.ParentPath === item.Path);
+                    if (hasChildren) {
+                        toggle = `<span class="tree-toggle">▶</span>`;
+                    }
+                }
+
+                let icon = item.IsFolder ? '📁' : getFileIcon(item.Name);
+                let sizeStr = (item.IsFolder || item.Size == null) ? '' : formatBytes(item.Size);
+                let dateStr = item.DateModified || '';
+
+                const nodeHTML = `
+                    <div class="tree-item" data-path="${item.Path}" data-loaded="false" data-open="false">
+                        ${indent}
+                        ${toggle}
+                        <span class="tree-name"><span class="icon">${icon}</span>${item.Name}</span>
+                        <div class="tree-details">
+                            <span style="width: 120px; text-align: right;">${dateStr}</span>
+                            <span style="width: 80px; text-align: right;">${sizeStr}</span>
+                        </div>
+                    </div>
+                    <div class="tree-children"></div>
+                `;
+                row.innerHTML = nodeHTML;
+
+                const itemDiv = row.querySelector('.tree-item');
+                itemDiv.onclick = (e) => {
+                    if (item.IsFolder && hasChildren) {
+                        const isOpen = itemDiv.getAttribute('data-open') === 'true';
+                        const isLoaded = itemDiv.getAttribute('data-loaded') === 'true';
+                        const childrenDiv = row.querySelector('.tree-children');
+                        const toggleSpan = row.querySelector('.tree-toggle');
+
+                        if (isOpen) {
+                            childrenDiv.style.display = 'none';
+                            itemDiv.setAttribute('data-open', 'false');
+                            toggleSpan.classList.remove('open');
+                        } else {
+                            if (!isLoaded) {
+                                renderTreeNodes(item.Path, childrenDiv, level + 1);
+                                itemDiv.setAttribute('data-loaded', 'true');
+                            }
+                            childrenDiv.style.display = 'block';
+                            itemDiv.setAttribute('data-open', 'true');
+                            toggleSpan.classList.add('open');
+                        }
+                    }
+                };
+
+                container.appendChild(row);
+            });
+        }
+
+        // ==========================================
+        // HELPERS
+        // ==========================================
+        function sortItems(items) {
+            items.sort((a, b) => {
+                if (a.IsFolder && !b.IsFolder) return -1;
+                if (!a.IsFolder && b.IsFolder) return 1;
+                return a.Name.toLowerCase().localeCompare(b.Name.toLowerCase());
+            });
+        }
+
+        function showEmptyPlaceholder(container) {
+            container.innerHTML = `<div style="padding: 30px; text-align: center; color: #888; font-size: 14px; line-height: 1.5;">
+                <b>No data loaded yet.</b><br><br>
+                To view your files, you can <b>Drag & Drop</b> your <code>structure.json</code> file anywhere on this window.<br><br>
+                Or, use the provided PowerShell script which will automatically generate a new HTML file with data populated.
+            </div>`;
+        }
+
         function getExtension(filename) {
             const parts = filename.split('.');
             return parts.length > 1 ? parts.pop().toUpperCase() : 'File';
@@ -235,17 +497,17 @@
 
         // Drag and Drop Logic for structure.json
         const dz = document.getElementById('drop-zone');
-        document.body.ondragover = e => { 
-            e.preventDefault(); 
-            dz.style.display = 'flex'; 
+        document.body.ondragover = e => {
+            e.preventDefault();
+            dz.style.display = 'flex';
         };
-        document.body.ondragleave = e => { 
-            dz.style.display = 'none'; 
+        document.body.ondragleave = e => {
+            dz.style.display = 'none';
         };
         document.body.ondrop = e => {
-            e.preventDefault(); 
+            e.preventDefault();
             dz.style.display = 'none';
-            
+
             const file = e.dataTransfer.files[0];
             if (file && file.name.endsWith('.json')) {
                 const reader = new FileReader();
@@ -253,9 +515,9 @@
                     try {
                         const data = JSON.parse(e.target.result);
                         if (Array.isArray(data)) {
-                            fileData.length = 0; 
+                            fileData.length = 0;
                             fileData.push(...data);
-                            renderList("");
+                            renderData();
                         } else {
                             alert('Invalid JSON structure. Expected an array of files.');
                         }
@@ -270,7 +532,8 @@
         };
 
         // Initial Render
-        renderList("");
+        renderData();
     </script>
 </body>
+
 </html>
