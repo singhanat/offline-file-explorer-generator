@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Explorer - Offline View</title>
+    <style>
+        :root {
+            --bg-dark: #191919;
+            --bg-hover: #2b2b2b;
+            --text-main: #cccccc;
+            --text-muted: #888888;
+            --border-color: #333333;
+        }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+        .toolbar {
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: #202020;
+        }
+        .btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 4px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn:hover { background-color: var(--bg-hover); }
+        .btn:disabled { color: #555; cursor: not-allowed; border-color: #222; }
+        
+        .address-bar {
+            flex: 1;
+            display: flex;
+            background-color: #111111;
+            border: 1px solid #444;
+            padding: 4px 10px;
+            border-radius: 3px;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+        .address-part { cursor: pointer; padding: 2px 4px; border-radius: 2px; }
+        .address-part:hover { background-color: #333; }
+        
+        .list-header, .row {
+            display: grid;
+            grid-template-columns: 2.5fr 1fr 1fr 1fr;
+            padding: 6px 15px;
+            font-size: 13px;
+            align-items: center;
+        }
+        .list-header {
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        
+        .flex-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .row { border-bottom: 1px solid transparent; cursor: pointer; }
+        .row:hover { background-color: var(--bg-hover); }
+        
+        .col-name { display: flex; align-items: center; gap: 8px; }
+        .col-size { text-align: right; }
+        
+        .icon { font-size: 16px; }
+        
+        .drop-zone {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            z-index: 999;
+            display: none;
+        }
+        
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #444; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <button class="btn" id="btn-up" title="Up to higher level">↑ Up</button>
+        <button class="btn" onclick="renderList('')" title="Root">🏠 Home</button>
+        <div class="address-bar" id="address-bar"></div>
+    </div>
+    
+    <div class="list-header">
+        <div>Name</div>
+        <div>Date modified</div>
+        <div>Type</div>
+        <div class="col-size">Size</div>
+    </div>
+    
+    <div class="flex-list" id="file-list"></div>
+    
+    <div class="drop-zone" id="drop-zone">Drop structure.json here!</div>
+
+    <script>
+        // ==========================================
+        // DATA PLACEHOLDER
+        // ==========================================
+        const fileData = [];
+        // ==========================================
+
+        let currentPath = "";
+
+        function renderList(path) {
+            currentPath = path;
+            const listContainer = document.getElementById('file-list');
+            listContainer.innerHTML = '';
+            
+            // Update Address Bar
+            const addressBar = document.getElementById('address-bar');
+            addressBar.innerHTML = '';
+            const parts = path.split('/').filter(p => p);
+            
+            let bcHTML = `<span class="address-part" onclick="renderList('')">Root</span>`;
+            let currentBcPath = "";
+            parts.forEach((p, index) => {
+                currentBcPath += currentBcPath ? '/' + p : p;
+                bcHTML += `<span style="color:#666;">></span><span class="address-part" onclick="renderList('${currentBcPath}')">${p}</span>`;
+            });
+            addressBar.innerHTML = bcHTML;
+
+            // Update Up Button
+            const btnUp = document.getElementById('btn-up');
+            btnUp.disabled = !path;
+            btnUp.onclick = () => {
+                if (!path) return;
+                let newParts = path.split('/');
+                newParts.pop();
+                renderList(newParts.join('/'));
+            };
+
+            // Filter files
+            const items = fileData.filter(f => f.ParentPath === path);
+            
+            if (items.length === 0 && fileData.length === 0) {
+                listContainer.innerHTML = `<div style="padding: 30px; text-align: center; color: #888; font-size: 14px;">
+                    <b>No data loaded yet.</b><br><br>
+                    To view your files, you can <b>Drag & Drop</b> your <code>structure.json</code> file anywhere on this window.<br><br>
+                    Or, use the provided PowerShell script which will automatically generate a new HTML file with data populated.
+                </div>`;
+                return;
+            }
+
+            if (items.length === 0 && fileData.length > 0) {
+                listContainer.innerHTML = `<div style="padding: 30px; text-align: center; color: #888; font-size: 14px;">This folder is empty.</div>`;
+                return;
+            }
+
+            // Sort: Folders first, then alphabetically
+            items.sort((a, b) => {
+                if (a.IsFolder && !b.IsFolder) return -1;
+                if (!a.IsFolder && b.IsFolder) return 1;
+                return a.Name.toLowerCase().localeCompare(b.Name.toLowerCase());
+            });
+
+            items.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'row';
+                if (item.IsFolder) {
+                    row.onclick = () => renderList(item.Path);
+                }
+                
+                let icon = item.IsFolder ? '📁' : getFileIcon(item.Name);
+                let type = item.IsFolder ? 'File folder' : getExtension(item.Name) + ' File';
+                let sizeStr = (item.IsFolder || item.Size == null) ? '' : formatBytes(item.Size);
+                let dateStr = item.DateModified || '';
+                
+                row.innerHTML = `
+                    <div class="col-name"><span class="icon">${icon}</span>${item.Name}</div>
+                    <div>${dateStr}</div>
+                    <div>${type}</div>
+                    <div class="col-size">${sizeStr}</div>
+                `;
+                listContainer.appendChild(row);
+            });
+        }
+        
+        function getExtension(filename) {
+            const parts = filename.split('.');
+            return parts.length > 1 ? parts.pop().toUpperCase() : 'File';
+        }
+
+        function getFileIcon(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const icons = {
+                'pdf': '📕',
+                'txt': '📄', 'md': '📄', 'csv': '📄',
+                'doc': '📘', 'docx': '📘',
+                'xls': '📗', 'xlsx': '📗',
+                'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️', 'gif': '🖼️',
+                'zip': '📦', 'rar': '📦', '7z': '📦', 'tar': '📦', 'gz': '📦',
+                'json': '📜', 'html': '🌐', 'js': '📜', 'css': '🎨', 'php': '🐘', 'py': '🐍',
+                'xml': '📜', 'yml': '⚙️', 'yaml': '⚙️', 'ini': '⚙️', 'conf': '⚙️',
+                'exe': '⚙️', 'bat': '⚙️', 'ps1': '⚙️', 'sh': '⚙️'
+            };
+            return icons[ext] || '📄';
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 KB';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            if (i === 0) return bytes + ' Bytes';
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(0)) + ' ' + sizes[i];
+        }
+
+        // Drag and Drop Logic for structure.json
+        const dz = document.getElementById('drop-zone');
+        document.body.ondragover = e => { 
+            e.preventDefault(); 
+            dz.style.display = 'flex'; 
+        };
+        document.body.ondragleave = e => { 
+            dz.style.display = 'none'; 
+        };
+        document.body.ondrop = e => {
+            e.preventDefault(); 
+            dz.style.display = 'none';
+            
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.json')) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (Array.isArray(data)) {
+                            fileData.length = 0; 
+                            fileData.push(...data);
+                            renderList("");
+                        } else {
+                            alert('Invalid JSON structure. Expected an array of files.');
+                        }
+                    } catch (err) {
+                        alert('Error parsing JSON file: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            } else {
+                alert('Please drop a valid .json file (e.g., structure.json).');
+            }
+        };
+
+        // Initial Render
+        renderList("");
+    </script>
+</body>
+</html>
